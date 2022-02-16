@@ -86,6 +86,26 @@ async function fetchProductList(product) {
   }
 }
 
+// Retorna a lista de produtos
+async function fetchProductList(product) {
+  try {
+    const endpoint = `https://api.mercadolibre.com/sites/MLB/search?q=${product}`;
+    const response = await fetch(endpoint);
+    const { results } = await response.json();
+    document.querySelector('.loading').remove();
+    const products = results.map(({ id, title, thumbnail }) => {
+      return { sku: id, name: title, image: thumbnail }
+    })
+    const items = document.querySelector('.items');
+    products.forEach(({ sku, name, image }) => {
+      const product = createProductItemElement({sku, name, image});
+      items.appendChild(product);
+    });
+  } catch (error) {
+    return error;
+  }
+}
+
 // Adiciona o produto no carrinho e salva no localStorage
 async function fetchProductId({ target }) {
   try {
@@ -95,7 +115,6 @@ async function fetchProductId({ target }) {
     const { id, title, price } = await response.json();
     const cartItem = createCartItemElement({sku: id, name: title, salePrice: price});
     const cart = document.querySelector('.cart__items');
-    console.log('oiiiiiiiiiii');
     let total = parseFloat(document.querySelector('.total-price').innerText);
     total += price;
     document.querySelector('.total-price').innerText = total.toFixed(2).toString();
