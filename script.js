@@ -52,12 +52,6 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
-// Remove o loading
-function removeLoading() {
-  const loading = document.querySelector(".loading");
-  loading.remove();
-}
-
 function cartItemClickListener(event) {
   const parent = event.target.parentElement;
   const targetIndex = Array.prototype.indexOf.call(
@@ -75,26 +69,6 @@ function cartItemClickListener(event) {
     .toString();
   localStorage.setItem("products", JSON.stringify(products));
   return parent.removeChild(event.target);
-}
-
-// Retorna a lista de produtos
-async function fetchProductList(product) {
-  try {
-    const endpoint = `https://api.mercadolibre.com/sites/MLB/search?q=${product}`;
-    const response = await fetch(endpoint);
-    const { results } = await response.json();
-    document.querySelector(".loading").remove();
-    const products = results.map(({ id, title, thumbnail }) => {
-      return { sku: id, name: title, image: thumbnail };
-    });
-    const items = document.querySelector(".items");
-    products.forEach(({ sku, name, image }) => {
-      const product = createProductItemElement({ sku, name, image });
-      items.appendChild(product);
-    });
-  } catch (error) {
-    return error;
-  }
 }
 
 // Retorna a lista de produtos
