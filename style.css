@@ -74,3 +74,8 @@
   font-size: 16pt;
   text-align: center;
 }
+
+.cart .cart__item {
+  cursor: default;
+  margin: 5px 0;
+}

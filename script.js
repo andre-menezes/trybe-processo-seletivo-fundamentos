@@ -160,9 +160,28 @@ const loadProductList = () => {
     });
 };
 
+const fetchProductList = async (product) => {
+  try {
+    const endpoint = `https://api.mercadolibre.com/sites/MLB/search?q=${product}`;
+    const response = await fetch(endpoint);
+    const { results } = await response.json();
+    removeLoading();
+    const products = results.map(({ id, title, thumbnail }) => {
+      return { sku: id, name: title, image: thumbnail }
+    })
+    const items = document.querySelector('.items');
+    products.forEach(({ sku, name, image }) => {
+      const product = createProductItemElement({sku, name, image});
+      items.appendChild(product);
+    });
+  } catch (error) {
+    return error
+  }
+}
+
 // funções ao carregar a página
 window.onload = async function onload() {
-  await loadProductList();
+  await fetchProductList('computador');
   loadLocalStorage();
   await addTotalPrice();
   emptyCart();
