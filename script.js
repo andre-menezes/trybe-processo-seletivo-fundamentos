@@ -150,8 +150,4 @@ function clearCart() {
     document.querySelector('.total-price').innerText = '0.00';
     localStorage.clear();
   })
-<<<<<<< HEAD
 };
-=======
-}
->>>>>>> 894ca94201275c58abc9fe8e9ca52409634a866b
