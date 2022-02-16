@@ -1,6 +1,7 @@
 window.onload = async function onload() {
   await fetchProductList('computador');
-  loadCartItems();
+  await loadCartItems();
+  clearCart();
 };
 
 function createProductImageElement(imageSource) {
@@ -41,6 +42,9 @@ function cartItemClickListener(event) {
   const targetIndex = Array.prototype.indexOf.call(parent.children, event.target);
   const storage = localStorage.getItem('products');
   const products = JSON.parse(storage).filter((item, index) => index !== targetIndex);
+  let total = 0;
+  products.forEach((item) => total += item.salePrice);
+  document.querySelector('.total-price').innerText = total.toFixed(2).toString();
   localStorage.setItem('products', JSON.stringify(products));
   return parent.removeChild(event.target);
 }
@@ -82,19 +86,24 @@ async function fetchProductId({ target }) {
     const { id, title, price } = await response.json();
     const cartItem = createCartItemElement({sku: id, name: title, salePrice: price});
     const cart = document.querySelector('.cart__items');
+    let total = parseFloat(document.querySelector('.total-price').innerText);
+    total += price;
+    document.querySelector('.total-price').innerText = total.toFixed(2).toString();
     cart.appendChild(cartItem);
     const storage = localStorage.getItem('products');
     if (storage) {
       const list = JSON.parse(storage);
-      return localStorage.setItem(
+      localStorage.setItem(
         'products',
         JSON.stringify([...list, {sku: id, name: title, salePrice: price}])
       )
+      return setTotalPrice(); 
     } 
-    return localStorage.setItem(
+    localStorage.setItem(
       'products',
       JSON.stringify([{sku: id, name: title, salePrice: price}])
     )
+    return setTotalPrice(); 
   } catch (error) {
     return error;
   }
@@ -105,8 +114,25 @@ function loadCartItems() {
   const cart = document.querySelector('.cart__items');
   const storage = localStorage.getItem('products');
   const items = JSON.parse(storage);
-  items.forEach((item) => {
-    const product = createCartItemElement(item);
-    cart.appendChild(product);
+  let total = 0;
+  if (items) {
+    items.forEach((item) => {
+      total += item.salePrice;
+      const product = createCartItemElement(item);
+      cart.appendChild(product);
+    });
+  }
+  return document.querySelector('.total-price').innerText = total.toFixed(2).toString();
+};
+
+function clearCart() {
+  const btnClear = document.querySelector('.empty-cart');
+  btnClear.addEventListener('click', () => {
+    const cart = document.querySelector('.cart__items');
+    while (cart.firstChild) {
+      cart.removeChild(cart.firstChild)
+    };
+    document.querySelector('.total-price').innerText = '0.00';
+    localStorage.clear();
   })
-}
+};
