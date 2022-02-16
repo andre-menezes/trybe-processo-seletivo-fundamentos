@@ -75,7 +75,7 @@
   text-align: center;
 }
 
-.cart .cart__item {
+.cart__item {
   cursor: default;
-  margin: 5px 0;
+  margin: 10px 0;
 }
